@@ -13,45 +13,51 @@ function App() {
   const [inputQuery, setQuery] = useState('');
 
   useEffect(() => {
-    setNumbers(uniq([...numbers, ...recentNewAdditions]));
+    setNumbers(numbers => uniq([...numbers, ...recentNewAdditions]));
   }, [recentNewAdditions]);
 
 
   useEffect(() => {
-    setDuplicates(uniq([...duplicates, ...recentNewDuplicates]));
+    setDuplicates(duplicates => uniq([...duplicates, ...recentNewDuplicates]));
   }, [recentNewDuplicates]);
 
   useEffect(() => {
     setInputs([...inputEntries, inputQuery]);
   }, [inputQuery]);
 
-  const KeyupEvent = debounce((input) => {
-    let pattern = /^\d+$/;
-    let inputs = input.split(",").map(item => item.trim());
-    inputs.forEach((element, index) => {
-      let query = `${element}_${index}`;
-      let isFound = inputEntries.indexOf(query) >= 0
-      if (!isFound) {
-        setQuery(query);
-        let rangeList = element.split("-").map(item => parseInt(item.trim())).filter(item =>
-          pattern.test(item) === true);
-        let start = rangeList[0];
-        let end;
-        if (rangeList.length > 1) {
-          end = rangeList[1];
-          checkDuplicateWithRange(start, end);
-        }
-        else {
-          start && setStateValues([start]);;
+  // const KeyupEvent = debounce(
+  const KeyupEvent =
+    (input) => {
+      if (input.indexOf(',') >= 0) {
+        let pattern = /^\d+$/;
+        let inputs = input.split(",").map(item => item.trim());
+        for (let index = 0; index < inputs.length; index++) {
+          let element = inputs[index];
+          let query = `${element}_${index}`;
+          console.log("Rupank Input entries are ", inputEntries, query);
+          let isFound = inputEntries.indexOf(query) >= 0
+          if (!isFound) {
+            setQuery(query);
+            let rangeList = element.split("-").map(item => parseInt(item.trim())).filter(item =>
+              pattern.test(item) === true);
+            let start = rangeList[0];
+            let end;
+            if (rangeList.length > 1) {
+              end = rangeList[1];
+              checkDuplicateWithRange(start, end);
+            }
+            else {
+              start && setStateValues([start]);;
+            }
+          }
         }
       }
-    });
-  }, 1000);
+    }
+  // , 1000);
 
   function setStateValues(arr) {
     let newAddition = arr.filter(entries => numbers.indexOf(entries) === -1);
     let newDuplicate = arr.filter(entries => numbers.indexOf(entries) !== -1);
-    console.log("Rupank", newDuplicate, newAddition, numbers);
     setNewAdditions(newAddition);
     setNewDuplicates(newDuplicate);
   }

@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import uniq from 'lodash.uniq';
-import intersection from 'lodash.intersection';
-import union from 'lodash.union';
 import './App.css';
 
 function App() {
@@ -12,18 +10,29 @@ function App() {
   const [inputEntries, setInputs] = useState([]);
   const [recentNewAdditions, setNewAdditions] = useState([]);
   const [recentNewDuplicates, setNewDuplicates] = useState([]);
+  const [inputQuery, setQuery] = useState('');
 
+  useEffect(() => {
+    setNumbers(uniq([...numbers, ...recentNewAdditions]));
+  }, [recentNewAdditions]);
+
+
+  useEffect(() => {
+    setDuplicates(uniq([...duplicates, ...recentNewDuplicates]));
+  }, [recentNewDuplicates]);
+
+  useEffect(() => {
+    setInputs([...inputEntries, inputQuery]);
+  }, [inputQuery]);
 
   const KeyupEvent = debounce((input) => {
     let pattern = /^\d+$/;
     let inputs = input.split(",").map(item => item.trim());
-    inputs.forEach(element => {
-      let isFound = false;
-      inputEntries.forEach(val => {
-        if (val === element) isFound = true;
-      })
+    inputs.forEach((element, index) => {
+      let query = `${element}_${index}`;
+      let isFound = inputEntries.indexOf(query) >= 0
       if (!isFound) {
-        setInputs([...inputs, element]);
+        setQuery(query);
         let rangeList = element.split("-").map(item => parseInt(item.trim())).filter(item =>
           pattern.test(item) === true);
         let start = rangeList[0];
@@ -33,31 +42,20 @@ function App() {
           checkDuplicateWithRange(start, end);
         }
         else {
-          start && checkDuplicateNumber(start);
+          start && setStateValues([start]);;
         }
       }
-
     });
   }, 500);
-
-
 
   function setStateValues(arr) {
     let newAddition = arr.filter(entries => numbers.indexOf(entries) === -1);
     let newDuplicate = arr.filter(entries => numbers.indexOf(entries) !== -1);
+    console.log("Rupank", newDuplicate, newAddition, numbers);
     setNewAdditions(newAddition);
     setNewDuplicates(newDuplicate);
-    let duplicateArray = intersection(numbers, arr);
-    let unionArray = union(numbers, arr);
-    let uniqDuplicatedArray = uniq([...duplicates, ...duplicateArray]);
-    let uniqMainArray = uniq([...numbers, ...unionArray]);
-    setDuplicates(uniqDuplicatedArray);
-    setNumbers(uniqMainArray);
   }
 
-  function checkDuplicateNumber(val) {
-    setStateValues([val]);
-  }
   function checkDuplicateWithRange(start, end) {
     let temp_arr = [];
     for (let i = start; i <= end; i++) {
@@ -67,23 +65,15 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div >
       Type Here:
         <input type="text" onKeyUp={(e) => KeyupEvent(e.target.value)}></input>
       <div className="container">
-        <div >
-          Final List is - {numbers.join(",")}
-        </div>
-        <div>
-          All time Duplicates found so far are  - {duplicates.join(",")}
-        </div>
 
-        <div>
-          Latest Additions are - {recentNewAdditions.join(",")}
-        </div>
-        <div>
-          Duplicates values in last input are - {recentNewDuplicates.join(",")}
-        </div>
+        <p> New Additions in last move are - {recentNewAdditions.join(",")}</p>
+        <p>New Duplicates in last move are  - {recentNewDuplicates.join(",")}</p>
+        <p>Final List is - {numbers.join(",")}</p>
+        <p>All time Duplicates  - {duplicates.join(",")}</p>
       </div>
     </div >
   );

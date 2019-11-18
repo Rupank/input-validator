@@ -10,6 +10,9 @@ function App() {
   const [numbers, setNumbers] = useState([]);
   const [duplicates, setDuplicates] = useState([]);
   const [inputEntries, setInputs] = useState([]);
+  const [recentNewAdditions, setNewAdditions] = useState([]);
+  const [recentNewDuplicates, setNewDuplicates] = useState([]);
+
 
   const KeyupEvent = debounce((input) => {
     let pattern = /^\d+$/;
@@ -40,6 +43,10 @@ function App() {
 
 
   function setStateValues(arr) {
+    let newAddition = arr.filter(entries => numbers.indexOf(entries) === -1);
+    let newDuplicate = arr.filter(entries => numbers.indexOf(entries) !== -1);
+    setNewAdditions(newAddition);
+    setNewDuplicates(newDuplicate);
     let duplicateArray = intersection(numbers, arr);
     let unionArray = union(numbers, arr);
     let uniqDuplicatedArray = uniq([...duplicates, ...duplicateArray]);
@@ -65,10 +72,17 @@ function App() {
         <input type="text" onKeyUp={(e) => KeyupEvent(e.target.value)}></input>
       <div className="container">
         <div >
-          Elements in Array are - {numbers.join(",")}
+          Final List is - {numbers.join(",")}
         </div>
         <div>
-          Duplicates are - {duplicates.join(",")}
+          All time Duplicates found so far are  - {duplicates.join(",")}
+        </div>
+
+        <div>
+          Latest Additions are - {recentNewAdditions.join(",")}
+        </div>
+        <div>
+          Duplicates values in last input are - {recentNewDuplicates.join(",")}
         </div>
       </div>
     </div >

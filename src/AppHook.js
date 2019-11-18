@@ -34,7 +34,6 @@ function App() {
         for (let index = 0; index < inputs.length; index++) {
           let element = inputs[index];
           let query = `${element}_${index}`;
-          console.log("Rupank Input entries are ", inputEntries, query);
           let isFound = inputEntries.indexOf(query) >= 0
           if (!isFound) {
             setQuery(query);

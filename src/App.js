@@ -46,7 +46,7 @@ function App() {
         }
       }
     });
-  }, 500);
+  }, 1000);
 
   function setStateValues(arr) {
     let newAddition = arr.filter(entries => numbers.indexOf(entries) === -1);

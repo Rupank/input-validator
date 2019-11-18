@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import uniq from 'lodash.uniq';
 import debounce from 'lodash.debounce';
-class Appnew extends Component {
+class Validator extends Component {
 
     constructor(props) {
         super(props)
@@ -18,6 +18,7 @@ class Appnew extends Component {
     KeyupEvent = debounce((input) => {
         let pattern = /^\d+$/;
         let inputs = input.split(",").map(item => item.trim());
+        debugger;
         inputs.forEach((element, index) => {
             let query = `${element}_${index}`;
             let isFound = this.state.inputEntries.indexOf(query) >= 0
@@ -35,7 +36,7 @@ class Appnew extends Component {
                         this.checkDuplicateWithRange(start, end);
                     }
                     else {
-                        start && this.setStateValues([start]);;
+                        start !== undefined && this.setStateValues([start]);;
                     }
                 })
             }
@@ -98,4 +99,4 @@ class Appnew extends Component {
     }
 }
 
-export default Appnew
+export default Validator
